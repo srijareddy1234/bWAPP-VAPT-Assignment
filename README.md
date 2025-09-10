@@ -117,6 +117,76 @@ To mitigate OS Command Injection vulnerabilities:
    - Perform secure code reviews.  
    - Use automated tools (e.g., Burp Suite, OWASP ZAP) to test for injection flaws.  
 
+# A4 - Insecure Direct Object References (IDOR)
+
+## Description
+**Insecure Direct Object References (IDOR)** is a common web application vulnerability that occurs when an application exposes internal implementation objects (such as files, database keys, usernames, or account IDs) without proper access control.  
+
+Attackers can manipulate these references to gain **unauthorized access to data** or **perform actions on behalf of other users**.  
+
+This vulnerability is part of the **OWASP Top 10 (A4 - Access Control Issues)**.
+
+---
+
+## Security Level: Low
+- A simple text box is provided to update the **secret key**.  
+- The request contains the **username** of the logged-in user, which can be intercepted and modified.  
+
+### Example Exploit:
+1. Logged in as `bee`.  
+2. Intercept the request and modify the `login=bee` parameter to `login=john`.  
+3. If a user `john` exists, the attacker can modify **john’s secret key** without having access to his account.  
+
+Proof: By checking the **MySQL database**, we see that the secret of `john` was updated from `bee`’s account.  
+
+### Root Cause:
+- The application does not validate whether the logged-in user is authorized to update the requested account.  
+- The only validation in the code is a simple character filter (no access control checks).  
+
+---
+
+## Security Level: Medium / High
+- In this mode, the application no longer relies on the **login parameter**.  
+- Instead, it assigns a **unique random token** to each user for every request.  
+- This prevents attackers from tampering with usernames in the request.  
+
+### Example:
+- Request is validated against the **session-based token** instead of relying on user-controlled parameters.  
+- Any unauthorized modification attempt fails since the token does not match the session of the logged-in user.  
+
+Proof: Source code shows the request validation using **unique tokens**, ensuring proper access control.  
+
+---
+
+## Severity
+- **CVSS Score:** 8.7 (High)  
+- **Impact:** Account takeover, unauthorized data manipulation.  
+- **Attack Vector:** Remote, requires knowledge of other user identifiers.  
+- **Priority:** High (should be fixed quickly).  
+
+---
+
+## Remediation
+To mitigate IDOR vulnerabilities:
+
+1. **Enforce Access Control**  
+   - Always check that the logged-in user is authorized to access or modify the requested resource.  
+
+2. **Avoid Exposing Identifiers**  
+   - Do not expose sensitive identifiers (like usernames, IDs) directly in client-side requests.  
+   - Use indirect references such as **randomized tokens** or **UUIDs**.  
+
+3. **Session-Based Validation**  
+   - Tie sensitive actions to the logged-in session, not user-controlled parameters.  
+
+4. **Least Privilege**  
+   - Ensure users can only access their own data and not modify others’.  
+
+5. **Testing**  
+   - Perform manual and automated testing to identify IDOR issues.  
+   - Tools like **Burp Suite** or **OWASP ZAP** can help identify parameter tampering.  
+
+
 
 
 
