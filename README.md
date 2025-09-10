@@ -186,6 +186,65 @@ To mitigate IDOR vulnerabilities:
    - Perform manual and automated testing to identify IDOR issues.  
    - Tools like **Burp Suite** or **OWASP ZAP** can help identify parameter tampering.  
 
+# HTML Injection
+
+## Description
+**HTML Injection** is a type of injection vulnerability that occurs when a web application allows untrusted input to be injected into the HTML response without proper validation or sanitization.  
+
+This can allow an attacker to:
+- Steal session cookies or other sensitive information.  
+- Impersonate users by hijacking their session.  
+- Modify the content of the web page for the victim.  
+
+There are two main types:
+- Reflected GET HTML Injection – Input is sent through the URL query parameters.  
+- Reflected POST HTML Injection – Input is sent in the body of a POST request instead of the URL.  
+
+---
+
+## Security Level: Low
+- Works similar to reflected GET HTML Injection, but payload is delivered via the body of a POST request.  
+- Example payload:  
+  `script alert('test') /script`  
+- The payload is processed and executed in the victim’s browser.  
+- Since this uses the POST method, no parameter is shown in the URL.  
+
+---
+
+## Security Level: Medium
+- At this level, the application attempts to filter malicious input.  
+- The application returns back the encoded payload.  
+- By encoding the payload (`script alert('test') /script`), an attacker can bypass filters.  
+- Example: passing the encoded payload through the `lastname` parameter in the POST request still results in execution of the injected code.  
+
+---
+
+## Severity
+- CVSS Score: 6.1 (Medium) – may escalate depending on impact.  
+- Impact:  
+  - Stealing user cookies.  
+  - Modifying the content of the web page.  
+  - Redirecting users to malicious websites.  
+- Priority: Medium (requires remediation to prevent session hijacking or phishing attacks).  
+
+---
+
+## Remediation
+1. Input Validation and Sanitization  
+   - Filter and validate all user input on both client-side and server-side.  
+   - Remove or encode special HTML characters (`<`, `>`, `"`, `'`, `/`).  
+
+2. Output Encoding  
+   - Apply proper output encoding before displaying user-supplied data in HTML pages.  
+
+3. Content Security Policy (CSP)  
+   - Implement a CSP header to restrict the execution of inline scripts.  
+
+4. Avoid Dynamic HTML Generation  
+   - Do not concatenate untrusted input directly into HTML responses.  
+   - Use safe templating engines that automatically escape user input.  
+
+---
 
 
 
