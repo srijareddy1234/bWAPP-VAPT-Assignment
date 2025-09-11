@@ -56,6 +56,50 @@ to complete the bWAPP setup process.
 
 <img width="955" height="667" alt="ss-4-bwaapploginpage" src="https://github.com/user-attachments/assets/204a839f-115a-47b7-b62a-78b6e8054c15" />
 
+# SSL/TLS Assessment Report  
+<img width="1378" height="658" alt="image" src="https://github.com/user-attachments/assets/95c01f65-b85f-42dd-b8ae-166d827bd4d2" />
+
+**Target:** [http://www.itsecgames.com/](http://www.itsecgames.com/)  
+
+---
+
+## Issue: Missing SSL/TLS Configuration  
+- **Severity:** High  
+- **Status:** The website does not support HTTPS and no SSL/TLS certificate is deployed.  
+
+---
+
+## Findings
+- No HTTPS support  
+- No SSL/TLS certificate configured  
+- All traffic is unencrypted (plaintext)  
+- No server authenticity or trust validation  
+
+---
+
+## Risks
+- **Confidentiality:** Data can be intercepted (eavesdropping).  
+- **Integrity:** Requests and responses may be modified in transit.  
+- **Authentication:** Users cannot verify they are connecting to the legitimate server.  
+- **Trust:** Modern browsers flag the site as *Not Secure*.  
+
+---
+
+## Recommendation
+- Deploy HTTPS with a valid SSL/TLS certificate (e.g., Let’s Encrypt).  
+- Enforce TLS 1.2 and TLS 1.3 only; disable insecure protocols.  
+- Use strong cipher suites with forward secrecy.  
+- Configure **HSTS (HTTP Strict Transport Security)** to enforce secure connections.  
+- Set up certificate renewal and monitor expiry.  
+
+---
+
+## Conclusion
+The absence of SSL/TLS leaves the site exposed to interception and man-in-the-middle attacks. Enabling HTTPS with a valid certificate is critical to ensure security and user trust.  
+
+---
+
+
 # OS Command Injection
 
 ## Description
