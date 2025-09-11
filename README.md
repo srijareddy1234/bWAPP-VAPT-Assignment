@@ -323,6 +323,46 @@ Reflected JSON XSS is a vulnerability that occurs when user input is reflected b
 
 ---
 
+# Denial-of-Service (Slow HTTP DoS)
+
+## Description
+A Slow HTTP DoS attack is a denial-of-service technique where an attacker sends HTTP requests very slowly, either by transmitting headers or body data in small pieces at long intervals. Since the server keeps the connection open while waiting for the request to complete, multiple slow connections can exhaust available resources, causing the server to become unresponsive to legitimate users.
+
+---
+
+## Proof of Concept
+
+**Step 1:** Download the `slowloris.py` script and unzip it.  
+
+**Step 2:** Navigate to the script’s directory.  
+
+**Step 3:** Run the script against the target IP using the command:  
+```
+./slowloris.py -p 80 -v 192.168.29.3
+```
+
+**Step 4:** Once executed, the attack consumes server resources.  
+The target site becomes extremely slow to load and eventually inaccessible, confirming the denial-of-service condition.  
+
+---
+
+## Severity
+- CVSS Score: 7.5 (High) – depending on server resources and protections in place.  
+- Impact:  
+  - Server becomes unresponsive to legitimate traffic.  
+  - Potential downtime for web applications and services.  
+- Priority: High (should be mitigated immediately).  
+
+---
+
+## Remediation
+1. Configure web servers to limit the number of open connections per client.  
+2. Set appropriate **timeouts** for incomplete HTTP headers and body data.  
+3. Use a **reverse proxy** or **load balancer** (e.g., Nginx, HAProxy) to filter out slow connections.  
+4. Deploy a **Web Application Firewall (WAF)** or DoS protection services (e.g., Cloudflare, AWS Shield).  
+5. Monitor server logs for abnormal traffic patterns to detect and block slow DoS attempts.  
+
+---
 
 
 
