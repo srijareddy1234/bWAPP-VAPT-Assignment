@@ -246,6 +246,82 @@ There are two main types:
 
 ---
 
+# Sensitive Data Exposure – Base64 Encoding
+
+## Description
+Sensitive Data Exposure occurs when applications do not adequately protect sensitive information such as cookies, passwords, tokens, or other confidential data.  
+Attackers can intercept, decode, or decrypt weakly protected data and gain access to sensitive information.
+
+In this example, BWAPP demonstrates how weak encoding mechanisms like Base64 or unsalted hashes can expose data.
+
+---
+
+## Security Level: Low
+
+**Step 1:** Open BWAPP, select "Base64 Encoding" and click on Hack.  
+**Step 2:** Capture the request in Burp Suite. A `cookie-header` and a parameter named `secret` are observed.  
+**Step 3:** The hint suggests decoding the parameter. Using BurpSuite’s `smart decoder`, identify the type of encoding. In this case, it is **Base64**.  
+**Step 4:** Select Base64 decoding. The message is revealed as:  
+
+```
+Any bugs?
+```
+
+This shows sensitive data is exposed due to weak encoding.
+
+---
+
+## Security Level: Medium / High
+
+**Step 1:** Capture the request in Burp Suite. This time, the encoded value is longer and appears more complex.  
+**Step 2:** Use a hash analyzer to determine the type of hash. It is identified as **SHA-1** with a bit length of 160.  
+**Step 3:** Decrypt or brute force the hash to retrieve the original sensitive data.  
+
+This demonstrates how storing sensitive data with weak or outdated cryptographic functions can still lead to exposure.
+
+---
+
+## Severity
+- CVSS Score: 7.5 (High) – depends on the sensitivity of the exposed data.  
+- Impact:  
+  - Exposure of sensitive information (cookies, secrets, or authentication tokens).  
+  - Risk of unauthorized access to user accounts.  
+- Priority: High (must implement strong encryption for sensitive data).  
+
+---
+
+## Remediation
+1. Do not use **Base64** or weak hashing functions (like **MD5** or **SHA-1**) for storing or transmitting sensitive data.  
+2. Use modern cryptographic algorithms such as **AES-256** for encryption and **SHA-256/SHA-3 with salting and key stretching** for hashing.  
+3. Ensure sensitive data is only transmitted over **HTTPS** (TLS/SSL).  
+4. Avoid storing sensitive information in client-side components such as cookies or hidden form fields.  
+5. Regularly update and review cryptographic libraries to prevent the use of broken algorithms.
+
+# bWAPP – XSS Reflected JSON
+
+## Description
+Reflected JSON XSS is a vulnerability that occurs when user input is reflected back inside a JSON response without proper validation or encoding. If the response is interpreted by a browser or a client-side script, an attacker can inject malicious JavaScript that executes in the victim’s browser, potentially leading to data theft, session hijacking, or other client-side attacks.
+
+---
+
+## Severity
+- CVSS Score: 6.1 (Medium) – can escalate depending on impact.  
+- Impact:  
+  - Execution of arbitrary JavaScript in the victim’s browser.  
+  - Theft of cookies, tokens, or other sensitive information.  
+  - Possible session hijacking and client-side manipulation.  
+- Priority: Medium (requires remediation to prevent exploitation).  
+
+---
+
+## Remediation
+1. Properly validate and sanitize all user inputs before including them in JSON responses.  
+2. Apply output encoding to escape special characters in JSON.  
+3. Always return JSON responses with the correct `Content-Type: application/json` header.  
+4. Implement Content Security Policy (CSP) to limit the execution of injected scripts.  
+5. Avoid directly reflecting user input into responses without strict validation.  
+
+---
 
 
 
