@@ -12,8 +12,8 @@ VAPT assignment using bWAPP - documenting vulnerabilities, PoC, and mitigation.
 ## Tools Used
 
 - **Burp Suite** (Proxy, Repeater, Scanner)
-- **SQLmap** (SQL Injection testing)
-- **Browser Developer Tools**
+- **Wireshark** (Packet Capturing)
+- **nmaap**
 - **bWAPP Docker container**
 
 ---
@@ -100,7 +100,7 @@ The absence of SSL/TLS leaves the site exposed to interception and man-in-the-mi
 ---
 
 
-# OS Command Injection
+# 1. OS Command Injection
 
 ## Description
 **OS Command Injection** (also known as *Shell Injection*) is a critical web security vulnerability that occurs when an application insecurely passes user-supplied input into a system command.  
@@ -161,7 +161,7 @@ To mitigate OS Command Injection vulnerabilities:
    - Perform secure code reviews.  
    - Use automated tools (e.g., Burp Suite, OWASP ZAP) to test for injection flaws.  
 
-# A4 - Insecure Direct Object References (IDOR)
+# 2. A4 - Insecure Direct Object References (IDOR)
 
 ## Description
 **Insecure Direct Object References (IDOR)** is a common web application vulnerability that occurs when an application exposes internal implementation objects (such as files, database keys, usernames, or account IDs) without proper access control.  
@@ -230,7 +230,7 @@ To mitigate IDOR vulnerabilities:
    - Perform manual and automated testing to identify IDOR issues.  
    - Tools like **Burp Suite** or **OWASP ZAP** can help identify parameter tampering.  
 
-# HTML Injection
+# 3. HTML Injection
 
 ## Description
 **HTML Injection** is a type of injection vulnerability that occurs when a web application allows untrusted input to be injected into the HTML response without proper validation or sanitization.  
@@ -290,7 +290,7 @@ There are two main types:
 
 ---
 
-# Sensitive Data Exposure – Base64 Encoding
+# 4. Sensitive Data Exposure – Base64 Encoding
 
 ## Description
 Sensitive Data Exposure occurs when applications do not adequately protect sensitive information such as cookies, passwords, tokens, or other confidential data.  
@@ -341,7 +341,7 @@ This demonstrates how storing sensitive data with weak or outdated cryptographic
 4. Avoid storing sensitive information in client-side components such as cookies or hidden form fields.  
 5. Regularly update and review cryptographic libraries to prevent the use of broken algorithms.
 
-# bWAPP – XSS Reflected JSON
+# 5. bWAPP – XSS Reflected JSON
 
 ## Description
 Reflected JSON XSS is a vulnerability that occurs when user input is reflected back inside a JSON response without proper validation or encoding. If the response is interpreted by a browser or a client-side script, an attacker can inject malicious JavaScript that executes in the victim’s browser, potentially leading to data theft, session hijacking, or other client-side attacks.
@@ -367,7 +367,7 @@ Reflected JSON XSS is a vulnerability that occurs when user input is reflected b
 
 ---
 
-# Denial-of-Service (Slow HTTP DoS)
+# 6. Denial-of-Service (Slow HTTP DoS)
 
 ## Description
 A Slow HTTP DoS attack is a denial-of-service technique where an attacker sends HTTP requests very slowly, either by transmitting headers or body data in small pieces at long intervals. Since the server keeps the connection open while waiting for the request to complete, multiple slow connections can exhaust available resources, causing the server to become unresponsive to legitimate users.
@@ -405,6 +405,46 @@ The target site becomes extremely slow to load and eventually inaccessible, conf
 3. Use a **reverse proxy** or **load balancer** (e.g., Nginx, HAProxy) to filter out slow connections.  
 4. Deploy a **Web Application Firewall (WAF)** or DoS protection services (e.g., Cloudflare, AWS Shield).  
 5. Monitor server logs for abnormal traffic patterns to detect and block slow DoS attempts.  
+
+---
+# 7. Man-in-the-Middle Attack (HTTP)
+
+## Description
+A Man-in-the-Middle (MITM) attack over HTTP occurs when an attacker intercepts and possibly alters communication between a client (browser) and a server. Because HTTP traffic is unencrypted, an attacker can read, inject, or modify data in transit, leading to credential theft, session hijacking, or delivery of malicious content. MITM attacks are common on open Wi-Fi or poorly secured networks; using HTTPS prevents these attacks.
+
+**Prerequisites**
+- Attacker machine on the same LAN as victim (e.g., Kali).  
+- Target IPs: victim and gateway.  
+- Tools: `arpspoof`, `wireshark` or `tcpdump`.
+
+**Steps**
+1. Start ARP spoofing to position the attacker as the gateway for the victim:
+```
+arpspoof -i eth0 -t 192.168.29.93 -r 192.168.29.95
+```
+2. Open Wireshark (or `tcpdump`) on the attacker and capture traffic, then filter HTTP requests:
+3. Have the victim log in to the target web application (over HTTP).
+4. Inspect captured HTTP packets. Because the site uses plain HTTP (no TLS), request bodies and headers are visible in cleartext.
+5. Locate credentials or session tokens in the captured packets (POST body or cookies).
+
+**Observed Result**
+- Login credentials and other sensitive data transmitted over HTTP were captured in cleartext and visible in the packet capture.
+
+---
+
+## Severity
+- CVSS: variable (often High) depending on exposed data.  
+- Impact: credential theft, session hijacking, account takeover, content manipulation.  
+- Priority: High — fix promptly for any service handling sensitive data.
+
+---
+
+## Remediation
+1. Enforce HTTPS site-wide using valid certificates (Let’s Encrypt or CA-signed).  
+2. Redirect all HTTP requests to HTTPS and enable HSTS.  
+3. Use secure cookie flags (`Secure`, `HttpOnly`, `SameSite`).  
+4. Use VPNs on untrusted networks and educate users about risks of open Wi-Fi.  
+5. Monitor for ARP spoofing and enable network protections (Dynamic ARP Inspection, DHCP snooping) where possible.
 
 ---
 
