@@ -382,7 +382,7 @@ A Slow HTTP DoS attack is a denial-of-service technique where an attacker sends 
 
 **Step 3:** Run the script against the target IP using the command:  
 ```
-./slowloris.py -p 80 -v 192.168.29.3
+python3 slowloris.py -p 80 -v 192.168.85.128
 ```
 
 **Step 4:** Once executed, the attack consumes server resources.  
