@@ -40,12 +40,12 @@ I chose option since it is much eaiser to set up the BWAPP Application
 This repo provides you with a prebuilt Docker image that you can pull and run in seconds:
 
 ```bash
-docker pull hackersploit/bwapp-docker
+sudo docker pull hackersploit/bwapp-docker
 ```
 ### Running the bWAPP container
 Start the container with:
 ```
-docker run -d -p 80:80 hackersploit/bwapp-docker
+sudo docker run -d -p 80:80 hackersploit/bwapp-docker
 ```
 ### Installing bWAPP
 After running the container, navigate to:
